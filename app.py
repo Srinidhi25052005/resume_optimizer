@@ -13,9 +13,13 @@ if uploaded_file:
     else:
         text = extract_text_from_docx(uploaded_file)
 
-    st.text_area("Extracted Resume", text, height=300)
+    if text:
+        st.text_area("Extracted Resume", text, height=300)
 
-    if st.button("Optimize Resume"):
-        result = optimize_resume(text)
-        st.subheader("Optimized Resume")
-        st.write(result)
+        if st.button("Optimize Resume"):
+            with st.spinner("Optimizing your resume..."):
+                result = optimize_resume(text)
+            st.subheader("Optimized Resume")
+            st.write(result)
+    else:
+        st.error("Failed to extract text from the uploaded file. Please try again.")
