@@ -1,7 +1,7 @@
 import streamlit as st
-from services.pdf_service import extract_text_from_pdf
-from services.docx_service import extract_text_from_docx
-from services.ai_service import optimize_resume
+from pdf_service import extract_text_from_pdf
+from docx_service import extract_text_from_docx
+from ai_service import optimize_resume
 
 st.title("ATS Resume Optimizer 🚀")
 
