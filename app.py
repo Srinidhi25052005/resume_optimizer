@@ -6,7 +6,10 @@ from services.ai_service import optimize_resume
 
 st.title("ATS Resume Optimizer 🚀")
 
-_BULLET_PREFIX_PATTERN = re.compile(r"^[\s\-\*\d\.\)\u2022]+")
+BULLET_PREFIX_PATTERN = re.compile(r"^[\s\-\*\d\.\)\u2022]+")
+SCORE_PATTERN = re.compile(r"ATS[_\s]*SCORE\s*[:\-]\s*(\d{1,2}|100)", re.IGNORECASE)
+SUGGESTIONS_PATTERN = re.compile(r"IMPROVEMENT[_\s]*SUGGESTIONS\s*:\s*", re.IGNORECASE)
+OPTIMIZED_PATTERN = re.compile(r"OPTIMIZED[_\s]*RESUME\s*:\s*", re.IGNORECASE)
 
 
 def parse_ai_result(result_text):
@@ -17,15 +20,12 @@ def parse_ai_result(result_text):
     if not result_text:
         return score, suggestions, optimized_resume
 
-    score_match = re.search(
-        r"ATS[_\s]*SCORE\s*[:\-]\s*(\d{1,2}|100)", result_text, re.IGNORECASE
-    )
+    score_match = SCORE_PATTERN.search(result_text)
     if score_match:
-        score_value = int(score_match.group(1))
-        score = max(0, min(score_value, 100))
+        score = min(max(int(score_match.group(1)), 0), 100)
 
-    suggestions_match = re.search(r"IMPROVEMENT[_\s]*SUGGESTIONS\s*:\s*", result_text, re.IGNORECASE)
-    optimized_match = re.search(r"OPTIMIZED[_\s]*RESUME\s*:\s*", result_text, re.IGNORECASE)
+    suggestions_match = SUGGESTIONS_PATTERN.search(result_text)
+    optimized_match = OPTIMIZED_PATTERN.search(result_text)
 
     suggestions_block = ""
     if suggestions_match and optimized_match:
@@ -36,7 +36,7 @@ def parse_ai_result(result_text):
 
     if suggestions_block:
         for line in suggestions_block.splitlines():
-            cleaned = _BULLET_PREFIX_PATTERN.sub("", line).strip()
+            cleaned = BULLET_PREFIX_PATTERN.sub("", line).strip()
             if cleaned:
                 suggestions.append(cleaned)
         if not suggestions and suggestions_block.strip():
