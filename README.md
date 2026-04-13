@@ -53,3 +53,13 @@ resume_optimizer/
 - Automatic text extraction
 - AI-powered ATS score and improvement suggestions
 - Optimized resume output
+
+## Results / Demo
+
+After optimization, the app presents a structured results panel that includes:
+
+- **ATS Score** shown as a numeric metric with a progress bar
+- **Improvement Suggestions** in a collapsible list
+- **Optimized Resume** text with a one-click download button
+
+You can add screenshots of these sections here after running the app locally.

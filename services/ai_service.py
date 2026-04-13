@@ -10,11 +10,14 @@ def optimize_resume(resume_text):
     model = genai.GenerativeModel("gemini-pro")
 
     prompt = f"""
-You are an ATS (Applicant Tracking System) expert. Analyze the following resume and provide:
+You are an ATS (Applicant Tracking System) expert. Analyze the following resume and respond ONLY in the exact format below:
 
-1. An ATS compatibility score out of 100
-2. Specific improvements to increase the ATS score (keywords, action verbs, quantified achievements, formatting)
-3. An optimized version of the resume
+ATS_SCORE: <number between 0 and 100>
+IMPROVEMENT_SUGGESTIONS:
+- <suggestion 1>
+- <suggestion 2>
+OPTIMIZED_RESUME:
+<optimized resume text>
 
 Resume:
 {resume_text}
