@@ -6,7 +6,7 @@ from services.ai_service import optimize_resume
 
 st.title("ATS Resume Optimizer 🚀")
 
-BULLET_PREFIX_PATTERN = re.compile(r"^[\s\-\*\d\.\)\u2022]+")
+_BULLET_PREFIX_PATTERN = re.compile(r"^[\s\-\*\d\.\)\u2022]+")
 
 
 def parse_ai_result(result_text):
@@ -36,11 +36,15 @@ def parse_ai_result(result_text):
 
     if suggestions_block:
         for line in suggestions_block.splitlines():
-            cleaned = BULLET_PREFIX_PATTERN.sub("", line).strip()
+            cleaned = _BULLET_PREFIX_PATTERN.sub("", line).strip()
             if cleaned:
                 suggestions.append(cleaned)
         if not suggestions and suggestions_block.strip():
-            suggestions = [suggestions_block.strip()]
+            raw_block = suggestions_block.strip()
+            if "\n" in raw_block:
+                suggestions = [line.strip() for line in raw_block.splitlines() if line.strip()]
+            else:
+                suggestions = [item.strip() for item in raw_block.split(". ") if item.strip()]
 
     return score, suggestions, optimized_resume
 
@@ -87,6 +91,8 @@ if uploaded_file:
                         mime="text/plain",
                     )
                 else:
-                    st.write(result)
+                    st.info("Optimized resume section could not be parsed. See the full response below.")
+                    with st.expander("Full AI Response"):
+                        st.write(result)
     else:
         st.error("Failed to extract text from the uploaded file. Please try again.")
