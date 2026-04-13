@@ -6,7 +6,8 @@ model = genai.GenerativeModel("gemini-pro")
 
 
 def optimize_resume(resume_text):
-    prompt = f"""
+    try:
+        prompt = f"""
 You are an expert ATS (Applicant Tracking System) resume optimizer.
 Analyze the following resume and provide:
 1. An estimated ATS score out of 100
@@ -16,5 +17,7 @@ Analyze the following resume and provide:
 Resume:
 {resume_text}
 """
-    response = model.generate_content(prompt)
-    return response.text
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        raise RuntimeError(f"AI optimization failed: {e}") from e
