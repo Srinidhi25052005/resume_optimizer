@@ -6,6 +6,8 @@ from services.ai_service import optimize_resume
 
 st.title("ATS Resume Optimizer 🚀")
 
+BULLET_PREFIX_PATTERN = re.compile(r"^[\s\-\*\d\.\)\u2022]+")
+
 
 def parse_ai_result(result_text):
     score = None
@@ -15,7 +17,9 @@ def parse_ai_result(result_text):
     if not result_text:
         return score, suggestions, optimized_resume
 
-    score_match = re.search(r"ATS[_\s]*SCORE\s*[:\-]\s*(\d{1,3})", result_text, re.IGNORECASE)
+    score_match = re.search(
+        r"ATS[_\s]*SCORE\s*[:\-]\s*(\d{1,2}|100)", result_text, re.IGNORECASE
+    )
     if score_match:
         score_value = int(score_match.group(1))
         score = max(0, min(score_value, 100))
@@ -32,7 +36,7 @@ def parse_ai_result(result_text):
 
     if suggestions_block:
         for line in suggestions_block.splitlines():
-            cleaned = re.sub(r"^[\s\-\*\d\.\)\u2022]+", "", line).strip()
+            cleaned = BULLET_PREFIX_PATTERN.sub("", line).strip()
             if cleaned:
                 suggestions.append(cleaned)
         if not suggestions and suggestions_block.strip():
@@ -63,7 +67,7 @@ if uploaded_file:
                 st.subheader("Results")
                 if score is not None:
                     st.metric("ATS Score", f"{score}/100")
-                    st.progress(score)
+                    st.progress(score / 100)
                 else:
                     st.info("ATS score not found in the response.")
 
